@@ -17,5 +17,37 @@ employeesRouter.get('/', (req, res, next) => {
     });
 });
 
+employeesRouter.post('/', (req, res, next) => {
+    const name = req.body.employee.name;
+    const position = req.body.employee.position;
+    const wage = req.body.employee.wage;
+    const isCurrentEmployee = (req.body.employee.isCurrentEmployee = 0) ? 0 : 1;
+    const sql = 'INSERT INTO Employee (name, position, wage, is_current_employee) VALUES ($name, $position, $wage, $isCurrentEmployee)';
+    values = {
+        $name: name,
+        $position: position,
+        $wage: wage,
+        $isCurrentEmployee: isCurrentEmployee
+    };
+
+    if (!name || !position || !wage || !isCurrentEmployee) {
+        res.sendStatus(400);
+    }
+
+    db.run(sql, values, function(err) {
+        if (err) {
+            next(err);
+        } else {
+            db.get(`SELECT * FROM Employee WHERE Employee.id = ${this.lastID}`, (err2, employee) => {
+                if (err2) {
+                    next(err2);
+                } else {
+                    res.status(201).json({ employee: employee });
+                }
+            });
+        }
+    });
+});
+
 // Export employeesRouter
 module.exports = employeesRouter;
