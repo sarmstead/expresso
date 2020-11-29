@@ -7,7 +7,7 @@ const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
 // Param for /:employeeId
-employeesRouter.param('/:employeeId', (req, res, next, employeeId) => {
+employeesRouter.param('employeeId', (req, res, next, employeeId) => {
     const sql = 'SELECT * FROM Employee WHERE Employee.id = $employeeId';
     const values = { $employeeId: employeeId };
     db.get(sql, values, (err, employee) => {
