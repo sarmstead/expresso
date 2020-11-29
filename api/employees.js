@@ -64,5 +64,17 @@ employeesRouter.post('/', (req, res, next) => {
     });
 });
 
+employeesRouter.get('/:employeeId', (req, res, next) => {
+    const sql = 'SELECT * FROM Employee WHERE Employee.id = $employeeId';
+    const values = { $employeeId: req.params.employeeId };
+    db.get(sql, values, (err, employee) => {
+        if (err) {
+            next(err);
+        } else {
+            res.status(200).json({ employee: employee });
+        }
+    });
+});
+
 // Export employeesRouter
 module.exports = employeesRouter;
