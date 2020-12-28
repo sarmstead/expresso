@@ -6,6 +6,9 @@ const employeesRouter = express.Router();
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
+// Import timesheets router to append to api/employees router
+const timesheetsRouter = require('./timesheets');
+
 // Param for /:employeeId
 employeesRouter.param('employeeId', (req, res, next, employeeId) => {
     const sql = 'SELECT * FROM Employee WHERE Employee.id = $employeeId';
@@ -122,6 +125,9 @@ employeesRouter.delete('/:employeeId', (req, res, next) => {
         });
     });
 });
+
+// Mount timesheets router
+employeesRouter.use('/:employeeId/timesheets', timesheetsRouter);
 
 // Export employeesRouter
 module.exports = employeesRouter;
