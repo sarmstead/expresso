@@ -105,21 +105,21 @@ employeesRouter.put('/:employeeId', (req, res, next) => {
     });
 });
 
-// employeesRouter.delete('/:employeeId', (req, res, next) => {
-//     const sql = `UPDATE Employee SET is_current_employee = $isCurrentEmployee WHERE Employee.id = $employeeId`;
-//     const values = {
-//         $employeeId: req.params.employeeId,
-//         $isCurrentEmployee: 0
-//     };
-//     db.run(sql, values, (err) => {
-//         if (err) {
-//             next(err);
-//         }
-//         db.get(`SELECT * FROM Employee WHERE Employee.id = ${req.params.employeeId}`, (err2, employee) => {
-//             res.status(200).json({employee: employee});
-//         });
-//     });
-// });
+employeesRouter.delete('/:employeeId', (req, res, next) => {
+    const sql = `UPDATE Employee SET is_current_employee = $isCurrentEmployee WHERE Employee.id = $employeeId`;
+    const values = {
+        $employeeId: req.params.employeeId,
+        $isCurrentEmployee: 0
+    };
+    db.run(sql, values, (err) => {
+        if (err) {
+            next(err);
+        }
+        db.get(`SELECT * FROM Employee WHERE Employee.id = ${req.params.employeeId}`, (err2, employee) => {
+            res.status(200).json({employee: employee});
+        });
+    });
+});
 
 // Export employeesRouter
 module.exports = employeesRouter;
