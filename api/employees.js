@@ -47,6 +47,7 @@ employeesRouter.post('/', (req, res, next) => {
 
     if (!name || !position || !wage || !isCurrentEmployee) {
         res.sendStatus(400);
+        return next();
     }
 
     db.run(sql, values, function(err) {
@@ -82,6 +83,7 @@ employeesRouter.put('/:employeeId', (req, res, next) => {
     const wage = req.body.employee.wage;
     if (!name || !position || !wage) {
         res.sendStatus(400);
+        return next();
     }
 
     const isCurrentEmployee = req.body.employee.isCurrentEmployee === 0 ? 0 : 1;
