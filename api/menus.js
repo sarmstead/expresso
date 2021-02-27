@@ -64,5 +64,35 @@ menusRouter.get('/:menuId', (req, res, next) => {
     });
 });
 
+menusRouter.put('/:menuId', (req, res, next) => {
+    const title = req.body.menu.title;
+    const menuId = req.params.menuId;
+
+    if (!title) {
+        res.sendStatus(400);
+        return next();
+    }
+
+    const menuSql = 'UPDATE Menu SET title = $title WHERE Menu.id = $menuId';
+    const menuValues = {
+        $title: title,
+        $menuId: menuId
+    };
+
+    db.run(menuSql, menuValues, (err) => {
+        if (err) {
+            next(err);
+        }
+        db.get(`SELECT * FROM Menu WHERE Menu.id = ${menuId}`, (err2, menu) => {
+            if (err2) {
+                next(err2);
+            }
+            res.status(200).json({menu: menu});
+        });
+    });
+
+
+});
+
 // Export menusRouter
 module.exports = menusRouter;
