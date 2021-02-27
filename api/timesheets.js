@@ -9,6 +9,20 @@ const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite'
 // Export timesheetsRouter
 module.exports = timesheetsRouter;
 
+timesheetsRouter.params('timesheetId', (req, res, next, timesheetId) => {
+    const timesheetParamsSql = 'SELECT * FROM Timesheet WHERE Timesheet.id = $timesheetId';
+    const timesheetParamsValues = { $timesheetId: timesheetId };
+    db.get(timesheetParamsSql, timesheetParamsValues, (err, timesheet) => {
+        if (err) {
+            next(err);
+        } else if (timesheet) {
+            next();
+        } else {
+            res.sendStatus(404);
+        }
+    });
+});
+
 timesheetsRouter.get('/', (req, res, next) => {
     const sql = 'SELECT * FROM Timesheet WHERE Timesheet.employee_id = $employeeId';
     const values = { $employeeId: req.params.employeeId };
