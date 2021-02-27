@@ -55,5 +55,14 @@ menusRouter.post('/', (req, res, next) => {
     });
 });
 
+menusRouter.get('/:menuId', (req, res, next) => {
+    db.get(`SELECT * FROM Menu WHERE Menu.id = ${req.params.menuId}`, (err, menu) => {
+        if (err) {
+            next(err);
+        }
+        res.status(200).json({menu: menu});
+    });
+});
+
 // Export menusRouter
 module.exports = menusRouter;
