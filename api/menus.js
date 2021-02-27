@@ -6,6 +6,9 @@ const menusRouter = express.Router();
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
+// Import menuItems router to append to api/menus router
+const menuItemsRouter = require('./menu-items');
+
 menusRouter.param('menuId', (req, res, next, menuId) => {
     const menuParamSql = 'SELECT * FROM Menu WHERE Menu.id = $menuId';
     const menuParamValues = {$menuId: menuId};
@@ -93,6 +96,28 @@ menusRouter.put('/:menuId', (req, res, next) => {
 
 
 });
+
+menusRouter.delete('/:menuId', (req, res, next) => {
+    db.all(`SELECT * FROM MenuItem WHERE MenuItem.menu_id = ${req.params.menuId}`, function (err, menuItems) {
+        if (err) {
+            next(err);
+        } else if (menuItems) {
+            res.sendStatus(400);
+            return next();
+        } else {
+            db.run(`DELETE FROM Menu WHERE Menu.id = ${req.params.menuId}`, (err2) => {
+                if (err2) {
+                    next(err2);
+                }
+                res.sendStatus(204);
+            });
+        }
+    });
+    
+});
+
+// Mount menuItemsRouter router
+menusRouter.use('/:menuId/menu-items', menuItemsRouter);
 
 // Export menusRouter
 module.exports = menusRouter;
