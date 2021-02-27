@@ -15,5 +15,29 @@ menusRouter.get('/', (req, res, next) => {
     });
 });
 
+menusRouter.post('/', (req, res, next) => {
+    const title = req.body.menu.title;
+    if (!title) {
+        res.sendStatus(400);
+        return next();
+    }
+
+    const menuSql = 'INSERT INTO Menu (title) VALUES ($title)';
+    const menuValues = {$title: title};
+
+    db.run(menuSql, menuValues, function(err) {
+        if (err) {
+            next(err);
+        } else {
+            db.get(`SELECT * FROM Menu WHERE Menu.id = ${this.lastID}`, (err2, menu) => {
+                if (err2) {
+                    next(err2);
+                }
+                res.status(201).json({menu: menu});
+            });
+        }
+    });
+});
+
 // Export menusRouter
 module.exports = menusRouter;
