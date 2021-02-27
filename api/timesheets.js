@@ -40,7 +40,7 @@ timesheetsRouter.post('/', (req, res, next) => {
      const hours = req.body.timesheet.hours;
      const rate = req.body.timesheet.rate;
      const date = req.body.timesheet.date;
-     const employeeId = req.body.timesheet.employeeId;
+     const employeeId = req.params.employeeId;
 
      const employeeSql = 'SELECT * FROM Employee WHERE Employee.id = $employeeId';
      const employeeValues = { $employeeId: employeeId };
