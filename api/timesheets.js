@@ -79,3 +79,35 @@ timesheetsRouter.post('/', (req, res, next) => {
          }
      });
 });
+
+timesheetsRouter.put('/:timesheetId', (req, res, next) => {
+    const hours = req.body.timesheet.hours;
+    const rate = req.body.timesheet.rate;
+    const date = req.body.timesheet.date;
+    const employeeId = req.params.employeeId;
+    const timesheetId = req.params.timesheetId;
+
+    if (!hours || !rate || !date || !employeeId) {
+        res.sendStatus(400);
+        return next();
+    }
+
+    const timesheetSql = 'UPDATE Timesheet SET hours = $hours, rate = $rate, date = $date, employee_id = $employeeId WHERE Timesheet.id = $timesheetId';
+    const timesheetValues = {
+        $hours: hours, 
+        $rate: rate, 
+        $date: date, 
+        $employeeId: employeeId,
+        $timesheetId: timesheetId
+    };
+    // Update specified timesheet with provided API data
+    db.run(timesheetSql, timesheetValues, (err) => {
+        if(err) {
+            next(err);
+        }
+        // Query database for updated timesheet
+        db.get(`SELECT * FROM Timesheet WHERE Timesheet.id = ${req.params.timesheetId}`, (err2, timesheet) => {
+            res.status(200).json({timesheet: timesheet});
+        });
+    });
+});
