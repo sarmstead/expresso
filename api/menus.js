@@ -98,10 +98,10 @@ menusRouter.put('/:menuId', (req, res, next) => {
 });
 
 menusRouter.delete('/:menuId', (req, res, next) => {
-    db.all(`SELECT * FROM MenuItem WHERE MenuItem.menu_id = ${req.params.menuId}`, function (err, menuItems) {
+    db.all(`SELECT id FROM MenuItem WHERE MenuItem.menu_id = ${req.params.menuId}`, function (err, menuItems) {
         if (err) {
             next(err);
-        } else if (menuItems) {
+        } else if (menuItems.length > 0) {
             res.sendStatus(400);
             return next();
         } else {
