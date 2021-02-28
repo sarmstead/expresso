@@ -15,5 +15,39 @@ menuItemsRouter.get('/', (req, res, next) => {
     });
 });
 
+menuItemsRouter.post('/', (req, res, next) => {
+    const name = req.body.menuItem.name;
+    const description = req.body.menuItem.description;
+    const inventory = req.body.menuItem.inventory;
+    const price = req.body.menuItem.price;
+    const menuId = req.params.menuId;
+
+    if (!name || !description || !inventory || !price || !menuId) {
+        res.sendStatus(400);
+        return next();
+    }
+
+    const menuItemsSql = 'INSERT INTO MenuItem (name, description, inventory, price, menu_id) VALUES ($name, $description, $inventory, $price, $menuId)';
+    const menuItemsValues = {
+        $name: name, 
+        $description: description, 
+        $inventory: inventory, 
+        $price: price, 
+        $menuId: menuId
+    };
+
+    db.run(menuItemsSql, menuItemsValues, function(err) {
+        if (err) {
+            next(err);
+        }
+        db.get(`SELECT * FROM MenuItem WHERE MenuItem.id = ${this.lastID}`, (err2, menuItem) => {
+            if (err2) {
+                next(err2);
+            }
+            res.status(201).json({menuItem: menuItem});
+        })
+    })
+});
+
 // Export menuItemsRouter
 module.exports = menuItemsRouter;
